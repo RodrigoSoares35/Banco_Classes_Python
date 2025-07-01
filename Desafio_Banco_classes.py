@@ -328,10 +328,8 @@ def cartao_credito():
  
 def listar_contas(contas):
     for conta in contas:
-        print("=" * 100)
-        print(textwrap.dedent(str(conta)))
-
-
+        print("=" * 30)
+        print(conta)
 
 lista_usuarios = []
 lista_contas = []
@@ -345,25 +343,19 @@ while True:
            novo_usuario(lista_usuarios)
     
     elif opcao == "2":
-          numero_conta = len(lista_contas) + 1
-          conta = criar_conta(AGENCIA, numero_conta, lista_usuarios)
-
-          if conta:
-                lista_contas.append(conta)
+          print()
 
     elif opcao == "3":
-       
+        print()
 
     elif opcao == "4":
-        
+        print()
         
     elif opcao == "5":
-         
-         imprimir_extrato(saldo, extrato=extrato)
-       
+         print()
+              
     elif opcao == "6":
-         
-         imprimir_saldo(saldo)
+        print()
 
     elif opcao == "7":
         listar_contas(lista_contas)
