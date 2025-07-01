@@ -1,6 +1,5 @@
 from abc import ABC, abstractclassmethod, abstractproperty
-import datetime
-import textwrap
+
 
 
 class Cliente:
@@ -109,7 +108,7 @@ class ContaCorrente(Conta):
         return f"""\
             Titular:\t{self.cliente.nome}
             Agência:\t{self.agencia}
-            C/C:\t\t{self.numero}
+            C/C:\t{self.numero}
            
         """
 
@@ -126,7 +125,6 @@ class Historico:
             {
                 "tipo": transacao.__class__.__name__,
                 "valor": transacao.valor,
-                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%s"),
             }
         )
 
@@ -178,18 +176,17 @@ def menu():
     [3]------------- Depositar
     [4]----------------- Sacar
     [5]--------------- Extrato
-    [6]----------------- Saldo
-    [7]----------Listar contas
-    [8]------Cartão de Credito
+    [6]----------Listar contas
+    [7]------Cartão de Credito
     [0]------------------ Sair
 
     **************************
     Escolha: """
     return input((menu))
 
-def consultar_usuario(cpf, usuarios):
-    usuarios_filtrados = [usuario for usuario in usuarios if usuario["cpf"] == cpf]
-    return usuarios_filtrados[0] if usuarios_filtrados else None
+def consultar_usuario(cpf, clientes):
+    clientes_filtrados = [cliente for cliente in clientes if cliente.cpf == cpf]
+    return clientes_filtrados[0] if clientes_filtrados else None
 
 def recuperar_conta_cliente(cliente):
     if not cliente.contas:
@@ -259,11 +256,11 @@ def exibir_extrato(clientes):
     print(f"\nSaldo:\n\tR$ {conta.saldo:.2f}")
     print("==========================================")
 
-def novo_usuario(usuarios):
+def novo_usuario(clientes):
     cpf = input("Informe o CPF, Ex:12345678900:\n")
-    usuario = consultar_usuario(cpf, usuarios)
+    cliente = consultar_usuario(cpf, clientes)
 
-    if usuario:
+    if cliente:
         print("Usuário já Cadastrado!")
         return
 
@@ -271,9 +268,9 @@ def novo_usuario(usuarios):
     data_nascimento = input("Informe a data de nascimento Ex: dd-mm-aaaa:\n")
     endereco = input("Informe o endereço (logradouro, nro - bairro - cidade/sigla estado):\n")
 
-    usuario = PessoaFisica(nome=nome, data_nascimento=data_nascimento, cpf=cpf, endereco=endereco)
+    cliente = PessoaFisica(nome=nome, data_nascimento=data_nascimento, cpf=cpf, endereco=endereco)
 
-    usuarios.append(usuario)
+    clientes.append(cliente)
     
     print("----Dados Cadastrados---------")
     print(f"Nome:{nome} \n Data de Nascimento:{data_nascimento} \n Endereço:{endereco}")
@@ -283,7 +280,7 @@ def novo_usuario(usuarios):
 def criar_conta(numero_conta, clientes, contas):
     cpf = input("Informe o CPF do cliente: ")
     cliente = consultar_usuario(cpf, clientes)
-
+    
     if not cliente:
         print("\nCliente não encontrado❌")
         return
@@ -294,73 +291,55 @@ def criar_conta(numero_conta, clientes, contas):
 
     print("\nConta criada com sucesso ✅")
 
-def imprimir_saldo(saldo):
-     
-     print("\n========= Saldo==========")
-     print()
-     print(f"Saldo da Conta R$:{saldo:.2f}")
-     print()
-     print("===========================")   
-
-def listar_contas(contas):
-    print("-------Lista de Contas----------")
-    print()
-    for conta in contas:
-        linha = f"""\
-            Agência:{conta['agencia']}
-            C/C:{conta['numero_conta']}
-            Titular:{conta['usuario']['nome']}
-        """
-        print("-------------------------")
-        print(linha)
-       
 def cartao_credito():
  cartao_credito = 2000
  print("---Cartão de credito-----")
  print()
  print(f"Valor disponivel para compras no Credito R$: {cartao_credito:.2f}")
- compra = float(input("Informe o valor da Compra:\n"))
+ compra = float(input("Informe o valor da Compra R$: "))
  cartao_credito -= compra
+ 
  if compra > cartao_credito:
-      print("Saldo Insuficiente ❌")
+      print("Saldo Insuficiente❌")
  else:
+       print("Compra Realizada Com sucesso✅")
+       print()
        print(f"Valor disponivel para compras no Credito: {cartao_credito:.2f}")
  
 def listar_contas(contas):
+    print("------Lista de Contas")
     for conta in contas:
-        print("=" * 30)
+        print("-----------------------")
         print(conta)
 
-lista_usuarios = []
-lista_contas = []
-
+clientes = []
+contas = []
+numero_conta = 0
 
 while True:
 
     opcao = menu()
     
     if opcao == "1":
-           novo_usuario(lista_usuarios)
+           novo_usuario(clientes)
     
     elif opcao == "2":
-          print()
+        numero_conta += 1 
+        criar_conta(numero_conta, clientes, contas) 
 
     elif opcao == "3":
-        print()
+        depositar(clientes)
 
     elif opcao == "4":
-        print()
+       sacar(clientes)
         
     elif opcao == "5":
-         print()
-              
-    elif opcao == "6":
-        print()
-
-    elif opcao == "7":
-        listar_contas(lista_contas)
+       exibir_extrato(clientes)
     
-    elif opcao == "8":
+    elif opcao == "6":
+       listar_contas(contas)
+    
+    elif opcao == "7":
         cartao_credito()
        
     elif opcao == "0":
